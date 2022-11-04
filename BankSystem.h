@@ -21,8 +21,8 @@ public:
     void set_balance(double bal);
     string get_ID();
     void set_ID(string id);
-    void withdraw(double withdrawal);
-    void deposit(double added);
+    virtual void withdraw(double withdrawal);
+    virtual void deposit(double added);
 };
 
 class SavingsBankAccount : public BankAccount{
@@ -32,8 +32,8 @@ public:
     SavingsBankAccount(double bal, double min);
     void set_minimumBalance(double min);
     double get_minimumBalance();
-    //void withdraw_min(double withdrawal);
-    //void deposit2(double added);
+    void withdraw(double withdrawal);
+    void deposit(double added);
 };
 
 class Client : public BankingApplication{
@@ -41,7 +41,6 @@ private:
     string name;
     string address;
     string phone;
-    //BankAccount* userAccount;
 public:
     Client();
 };
