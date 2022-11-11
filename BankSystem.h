@@ -30,8 +30,7 @@ class SavingsBankAccount : public BankAccount{
 private:
     double minimumBalance = 1000;
 public:
-    SavingsBankAccount(double bal, double min);
-    void set_minimumBalance();
+    SavingsBankAccount(double bal);
     double get_minimumBalance();
     void withdraw(double withdrawal);
     void deposit(double added);

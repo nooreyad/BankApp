@@ -42,16 +42,13 @@ void BankAccount::deposit(double added) {
     balance += added;
 }
 
-SavingsBankAccount::SavingsBankAccount(double bal, double min){
+SavingsBankAccount::SavingsBankAccount(double bal){
     balance = bal;
     if(balance < minimumBalance){
         cout << "The minimum initial balance should be 1000, please try again!" << endl;
     }
 }
 
-void SavingsBankAccount::set_minimumBalance() {
-    minimumBalance = 1000;
-}
 
 double SavingsBankAccount::get_minimumBalance() {
     return minimumBalance;
