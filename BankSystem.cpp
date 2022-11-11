@@ -1,5 +1,16 @@
 #include "BankSystem.h"
 
+//BankingApplication::BankingApplication(int ch){
+//    choice = ch;
+//    cout << "Welcome to FCAI Banking Application \n"
+//            "1. Create a New Account \n"
+//            "2. List Clients and Accounts \n"
+//            "3. Withdraw Money \n"
+//            "4. Deposit Money \n"
+//            "Please enter Choice:";
+//    cin >> choice;
+//}
+
 BankAccount::BankAccount(){
     balance = 0.0;
 }
@@ -33,19 +44,32 @@ void BankAccount::deposit(double added) {
 
 SavingsBankAccount::SavingsBankAccount(double bal, double min){
     balance = bal;
-    if(min > minimumBalance){
-        minimumBalance = min;
+    if(balance < minimumBalance){
+        cout << "The minimum initial balance should be 1000, please try again!" << endl;
     }
 }
 
-void SavingsBankAccount::set_minimumBalance(double min) {
-    minimumBalance = min;
+void SavingsBankAccount::set_minimumBalance() {
+    minimumBalance = 1000;
 }
 
 double SavingsBankAccount::get_minimumBalance() {
     return minimumBalance;
 }
 
-void SavingsBankAccount::withdraw_min(double withdrawal) {
+void SavingsBankAccount::withdraw(double withdrawal) {
+    if(withdrawal > balance){
+        cout << "Withdrawal is greater than the available balance, please try again!" << endl;
+    } else if(withdrawal > minimumBalance) {
+        cout << "Withdrawal is greater than the minimum amount that should be left in bank, please try again!" << endl;
+        balance -= withdrawal;
+    }
+}
 
+void SavingsBankAccount::deposit(double added) {
+    if (added < 100 and added >= 0){
+        cout << "The minimum amount to be deposited in 100, please try again!" << endl;
+    } else if (added >= 100){
+        balance += added;
+    }
 }

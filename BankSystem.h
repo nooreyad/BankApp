@@ -4,9 +4,10 @@
 using namespace std;
 
 class BankingApplication{
-private:
+protected:
+    int choice;
 public:
-    BankingApplication();
+    //BankingApplication(int ch);
 };
 
 class BankAccount : public BankingApplication{
@@ -30,14 +31,14 @@ private:
     double minimumBalance = 1000;
 public:
     SavingsBankAccount(double bal, double min);
-    void set_minimumBalance(double min);
+    void set_minimumBalance();
     double get_minimumBalance();
     void withdraw(double withdrawal);
     void deposit(double added);
 };
 
 class Client : public BankingApplication{
-private:
+protected:
     string name;
     string address;
     string phone;
