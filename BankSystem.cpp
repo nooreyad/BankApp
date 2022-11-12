@@ -1,15 +1,74 @@
 #include "BankSystem.h"
+#include <bits/stdc++.h>
 
-//BankingApplication::BankingApplication(int ch){
-//    choice = ch;
-//    cout << "Welcome to FCAI Banking Application \n"
-//            "1. Create a New Account \n"
-//            "2. List Clients and Accounts \n"
-//            "3. Withdraw Money \n"
-//            "4. Deposit Money \n"
-//            "Please enter Choice:";
-//    cin >> choice;
-//}
+int BankAccount::countID = 0;
+
+BankingApplication::BankingApplication(int ch){
+    int choice;
+    fstream ClientFile;
+    fstream accountFile;
+    ClientFile.open("Client.txt", ios::app);
+    accountFile.open("Account.txt", ios::app);
+    int choiceAccount;
+    double accountBalance, minimumBalance;
+    string name, address, phone;
+    cout << "Welcome to FCAI Banking Application \n 1. Create a New Account \n 2. List Clients and Accounts \n 3. Withdraw Money \n 4. Deposit Money \n"
+            "Please enter Choice:";
+    cin >> choice;
+    if(choice == 1){
+        BankAccount initalize;
+        initalize.set_ID(initalize.increment_ID());
+        ClientFile << "Account ID: " << initalize.get_ID() << endl;
+        accountFile << "Account ID: " << initalize.get_ID() << endl;
+        cout << "Please Enter Client Name: ";
+        cin.ignore();
+        getline(cin, name);
+        ClientFile << "Name: " << name << endl;
+        cout << "Please Enter Client Address: ";
+        getline(cin, address);
+        ClientFile << "Address: " << address << endl;
+        cout << "Please Enter Client Phone: ";
+        getline(cin, phone);
+        ClientFile << "Phone: " << phone << endl;
+        Client user(name,address,phone);
+        cout << "What Type of Account Do You Like? (1) Basic (2) Saving, Type 1 or 2: ";
+        cin >> choiceAccount;
+        if(choiceAccount == 1){
+            cout << "Please Enter the Starting Balance: ";
+            cin >> accountBalance;
+            BankAccount basic(accountBalance);
+            ClientFile << "Balance: " << accountBalance << endl;
+            accountFile << "Balance: " << accountBalance << endl;
+            accountFile << "Account Type: Basic" << endl;
+        } else if(choiceAccount == 2){
+            cout << "Please Enter the Starting Balance: ";
+            cin >> accountBalance;
+            cout << "Please Enter the Minimum Balance, if not specified enter Minimum Balance of value 1000: ";
+            cin >> minimumBalance;
+            while(accountBalance < minimumBalance){
+                cout << "The initial balance shouldn't be less than the minimum balance, please try again!" << endl;
+                cin >> accountBalance;
+            }
+            SavingsBankAccount savingAccount(accountBalance,minimumBalance);
+            ClientFile << "Balance: " << accountBalance << endl;
+            accountFile << "Balance: " << accountBalance << endl;
+            accountFile << "Account Type: Saving" << endl;
+            //savingAccount.set_ID(savingAccount.increment_ID());
+        }
+    } else if(choice == 2){
+        cout << " ";
+    }else if(choice == 3) {
+        cout << "Please Enter Account ID (e.g., FCAI-015): ";
+    }else if(choice == 4){
+        cout << "Please Enter Account ID (e.g., FCAI-015): ";
+    } else {
+        cout << "Invalid input ";
+    }
+    ClientFile << endl;
+    accountFile << endl;
+    ClientFile.close();
+    accountFile.close();
+}
 
 BankAccount::BankAccount(){
     balance = 0.0;
@@ -42,34 +101,65 @@ void BankAccount::deposit(double added) {
     balance += added;
 }
 
-SavingsBankAccount::SavingsBankAccount(double bal,double minBalance=1000){
+SavingsBankAccount::SavingsBankAccount(double bal,double minBalance = 1000.0){
     minimumBalance = minBalance;
-    if(bal < minimumBalance){
-        cout << "The minimum initial balance shouldn't be less than the minimum balance, please try again!" << endl;
-    }
-    else{
-        balance = bal;
-    }
+    balance = bal;
 }
 
+void SavingsBankAccount::set_minimumBalance(double minBalance){
+    minimumBalance = minBalance;
+}
 
 double SavingsBankAccount::get_minimumBalance() {
     return minimumBalance;
 }
 
 void SavingsBankAccount::withdraw(double withdrawal) {
-    if(withdrawal > balance){
-        cout << "Withdrawal is greater than the available balance, please try again!" << endl;
-    } else if(balance-withdrawal>= minimumBalance) {
-        cout << "Withdrawal is greater than the minimum amount that should be left in bank, please try again!" << endl;
+    if(balance-withdrawal>= minimumBalance) {
         balance -= withdrawal;
+    } else {
+        cout << "Withdrawal is greater than the minimum amount that should be left in bank, please try again!" << endl;
     }
 }
 
 void SavingsBankAccount::deposit(double added) {
-    if (added < 100 and added >= 0){
+    if (added < 100){
         cout << "The minimum amount to be deposited in 100, please try again!" << endl;
-    } else if (added >= 100){
+    } else {
         balance += added;
     }
+}
+Client::Client()
+:name("none"), address("None"), phone("0"){
+
+}
+
+Client::Client(string name, string address, string phone) {
+    this->name = name;
+    this->address = address;
+    this->phone = phone;
+}
+
+void Client::set_name(string clientName){
+    name = clientName;
+}
+string Client::get_name(){
+    return name;
+}
+void Client::set_address(string clientAddress){
+    address = clientAddress;
+}
+string Client::get_address(){
+    return address;
+}
+void Client::set_phone(string clientPhone){
+    phone = clientPhone;
+}
+string Client::get_phone(){
+    return phone;
+}
+
+string BankAccount::increment_ID(){
+    this->ID = this->ID + to_string(++countID);
+    return this->ID;
 }

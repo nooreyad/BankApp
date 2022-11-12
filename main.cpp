@@ -4,4 +4,5 @@ using namespace std;
 
 int main(){
     cout << "yala ya shabab hanet";
+    BankingApplication run(0);
 }

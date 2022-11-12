@@ -4,23 +4,24 @@
 using namespace std;
 
 class BankingApplication{
-protected:
-    int choice;
 public:
-    //BankingApplication(int ch);
+    BankingApplication(int ch);
+    BankingApplication(){}
 };
 
 class BankAccount : public BankingApplication{
-private:
-    string ID;
 protected:
+    string ID = "FCAI-";
     double balance;
+    static int countID;
+    //Client* ptr2;
 public:
     BankAccount();
     BankAccount(double bal);
     double get_balance();
     void set_balance(double bal);
     string get_ID();
+    string increment_ID();
     void set_ID(string id);
     virtual void withdraw(double withdrawal);
     virtual void deposit(double added);
@@ -30,7 +31,8 @@ class SavingsBankAccount : public BankAccount{
 private:
     double minimumBalance;
 public:
-    SavingsBankAccount(double bal,double minBalance=1000);
+    SavingsBankAccount(double bal,double minBalance);
+    void set_minimumBalance(double minBalance);
     double get_minimumBalance();
     void withdraw(double withdrawal);
     void deposit(double added);
@@ -41,8 +43,16 @@ protected:
     string name;
     string address;
     string phone;
+    BankAccount* ptr;
 public:
     Client();
+    Client(string name, string address, string phone);
+    void set_name(string clientName);
+    string get_name();
+    void set_address(string clientAddress);
+    string get_address();
+    void set_phone(string clientPhone);
+    string get_phone();
 };
 
 
