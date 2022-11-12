@@ -1,10 +1,11 @@
 #include "BankSystem.h"
 #include <bits/stdc++.h>
 
-int BankAccount::countID = 0;
+//int BankAccount::countID = 0;
 
 BankingApplication::BankingApplication(int ch){
     int choice;
+    string user_ID;
     fstream ClientFile;
     fstream accountFile;
     ClientFile.open("Client.txt", ios::app);
@@ -53,16 +54,27 @@ BankingApplication::BankingApplication(int ch){
             ClientFile << "Balance: " << accountBalance << endl;
             accountFile << "Balance: " << accountBalance << endl;
             accountFile << "Account Type: Saving" << endl;
-            //savingAccount.set_ID(savingAccount.increment_ID());
         }
     } else if(choice == 2){
-        cout << " ";
+//        string word;
+//        string line;
+//        cout << "Please Please Enter Account ID (e.g., FCAI-015): ";
+//        cin >> user_ID;
+//        while(ClientFile >> word){
+//            if(word == user_ID){
+//                for (int i = 0; i < 5; ++i) {
+//                    getline(ClientFile, line);
+//                    cout << line;
+//                }
+//            }
+//        }
     }else if(choice == 3) {
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
     }else if(choice == 4){
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
     } else {
-        cout << "Invalid input ";
+        cout << "Invalid input, please try again ";
+        BankingApplication();
     }
     ClientFile << endl;
     accountFile << endl;
@@ -160,6 +172,16 @@ string Client::get_phone(){
 }
 
 string BankAccount::increment_ID(){
-    this->ID = this->ID + to_string(++countID);
+    ifstream file;
+    file.open("Account.txt");
+    int count = 0;
+    string line;
+    while(!file.eof()){
+        getline(file, line);
+        count++;
+    }
+    count --;
+    count /= 4;
+    this->ID = this->ID + to_string(count);
     return this->ID;
 }
