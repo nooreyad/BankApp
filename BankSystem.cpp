@@ -42,10 +42,13 @@ void BankAccount::deposit(double added) {
     balance += added;
 }
 
-SavingsBankAccount::SavingsBankAccount(double bal){
-    balance = bal;
-    if(balance < minimumBalance){
-        cout << "The minimum initial balance should be 1000, please try again!" << endl;
+SavingsBankAccount::SavingsBankAccount(double bal,double minBalance=1000){
+    minimumBalance = minBalance;
+    if(bal < minimumBalance){
+        cout << "The minimum initial balance shouldn't be less than the minimum balance, please try again!" << endl;
+    }
+    else{
+        balance = bal;
     }
 }
 
@@ -57,7 +60,7 @@ double SavingsBankAccount::get_minimumBalance() {
 void SavingsBankAccount::withdraw(double withdrawal) {
     if(withdrawal > balance){
         cout << "Withdrawal is greater than the available balance, please try again!" << endl;
-    } else if(withdrawal > minimumBalance) {
+    } else if(balance-withdrawal>= minimumBalance) {
         cout << "Withdrawal is greater than the minimum amount that should be left in bank, please try again!" << endl;
         balance -= withdrawal;
     }
