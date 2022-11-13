@@ -19,21 +19,44 @@ BankingApplication::BankingApplication(int ch){
     ClientFile.open("Client.txt", ios::in);
     while(!ClientFile.eof()){
         if(countMap == 0){
-            getline(ClientFile, lineMap);
+            ClientFile >> lineMap;
         }
         countMap++;
-        getline(ClientFile, lineMap);
-        getline(ClientFile, lineMap);
+        ClientFile >> lineMap;
+        string ID = lineMap;
+        ClientFile >> lineMap;
         string line1 = lineMap;
-        getline(ClientFile, lineMap);
+        ClientFile >> lineMap;
         string line2 = lineMap;
-        getline(ClientFile, lineMap);
+        ClientFile >> lineMap;
         string line3 = lineMap;
-        getline(ClientFile, lineMap);
+        ClientFile >> lineMap;
         string line4 = lineMap;
-        clients.insert(pair<string, list<string>>(lineMap, {line1, line2, line3, line4}));
+        ClientFile >> lineMap;
+        string line5 = lineMap;
+        clients.insert(pair<string, list<string>>(ID, {line1, line2, line3, line4, line5}));
     }
     ClientFile.close();
+    countMap = 0;
+    accountFile.open("Account.txt", ios::in);
+    while(!accountFile.eof()){
+        if(countMap == 0){
+            accountFile >> lineMap;
+        }
+        countMap++;
+        accountFile >> lineMap;
+        string ID = lineMap;
+        accountFile >> lineMap;
+        string line1 = lineMap;
+        accountFile >> lineMap;
+        string line2 = lineMap;
+        accountFile >> lineMap;
+        string line3 = lineMap;
+        accounts.insert(pair<string, list<string>>(ID, {line1, line2, line3}));
+    }
+    accountFile.close();
+
+
     if(choice == 1){
         ClientFile.open("Client.txt", ios::app);
         accountFile.open("Account.txt", ios::app);
@@ -54,16 +77,21 @@ BankingApplication::BankingApplication(int ch){
         Client user(name,address,phone);
         cout << "What Type of Account Do You Like? (1) Basic (2) Saving, Type 1 or 2: ";
         cin >> choiceAccount;
+
         if(choiceAccount == 1){
             cout << "Please Enter the Starting Balance: ";
             cin >> accountBalance;
             BankAccount basic(accountBalance);
             ClientFile << accountBalance << endl;
+            ClientFile << 0;
             accountFile << accountBalance << endl;
             accountFile << "Basic" << endl;
+            accountFile << 0;
             accounts.insert(pair<string, list<string>>(initalize.get_ID(), {to_string(accountBalance), "Basic"}));
             clients.insert(pair<string, list<string>>(initalize.get_ID(), {name, address, phone, to_string(accountBalance)}));
-        } else if(choiceAccount == 2){
+        }
+
+        else if(choiceAccount == 2){
             cout << "Please Enter the Starting Balance: ";
             cin >> accountBalance;
             cout << "Please Enter the Minimum Balance, if not specified enter Minimum Balance of value 1000: ";
@@ -74,88 +102,139 @@ BankingApplication::BankingApplication(int ch){
             }
             SavingsBankAccount savingAccount(accountBalance,minimumBalance);
             ClientFile << accountBalance << endl;
+            ClientFile << minimumBalance;
             accountFile << accountBalance << endl;
             accountFile << "Saving" << endl;
+            accountFile << minimumBalance;
             accounts.insert(pair<string, list<string>>(initalize.get_ID(), {to_string(accountBalance), "Saving"}));
             clients.insert(pair<string, list<string>>(initalize.get_ID(), {name, address, phone, to_string(accountBalance)}));
         }
+        cout << "An account was created with ID " << initalize.get_ID() << " and Starting Balance " << to_string(accountBalance) <<  " L.E." << endl;
         ClientFile << endl;
         accountFile << endl;
         ClientFile.close();
         accountFile.close();
-    } else if(choice == 2){
+    }
 
-//        ifstream list;
-//        list.open("Client.txt", ios::in);
-//        int count = 0;
-//        string word;
-//        string line;
-
-//        list<int>::iterator it = li.begin();
-//
-//        // Move the iterator by 5 elements
-//        advance(it, 5);
-//
-//        // Print the element at the it
-//        cout << *it;
+    else if(choice == 2){
         int count = 0;
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
         cin >> user_ID;
         for (auto item:clients) {
             if(user_ID == item.first){
                 cout << "ID: " << user_ID << endl;
-            }
-            for(auto item2: item.second){
-                if(count == 0)
-                    cout << "Name: ";
-                if(count == 1)
-                    cout << "Address: ";
-                if(count == 2)
-                    cout << "Phone: ";
-                if(count == 3)
-                    cout << "Balance: ";
-                cout << item2 << endl;
-                count++;
+                for(auto item2: item.second){
+                    if(count == 0)
+                        cout << "Name: ";
+                    if(count == 1)
+                        cout << "Address: ";
+                    if(count == 2)
+                        cout << "Phone: ";
+                    if(count == 3)
+                        cout << "Balance: ";
+                    if(count > 3)
+                        break;
+                    cout << item2 << endl;
+                    count++;
+                }
             }
         }
-//        while(!list.eof() && count <= 5){
-//            getline(list, line);
-//            if(line.find(user_ID) != -1){
-//               count++;
-//            }
-//            if(count >= 1){
-//                cout << line << endl;
-//                count++;
-//            }
-//        }
-//        list.close();
-    }else if(choice == 3) {
+    }
+
+    else if(choice == 3) {
+        string type;
+        BankAccount user;
+        int count = 0;
+        double to_withdraw, theBalance, minBalance;
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
         cin >> user_ID;
-        fstream list;
-        string balanceLine;
-        list.open("Account.txt", ios::in | ios::out);
-        int count = 0;
-        string word;
-        string line;
-        while(!list.eof() && count <= 3){
-            getline(list, line);
-            if(line.find(user_ID) != -1) {
-                count++;
-            }
-            if(count >= 1){
-                cout << line << endl;
-                if(count == 2){
-                    balanceLine = line;
+        for (auto item:accounts) {
+            if(user_ID == item.first){
+                cout << "ID: " << user_ID << endl;
+                for(auto item2: item.second){
+                    if(count == 0){
+                        cout << "Balance: ";
+                        cout << item2 << endl;
+                        theBalance = stod(item2);
+                    }
+                    if(count == 1){
+                        cout << "Type: ";
+                        cout << item2 << endl;
+                        type = item2;
+                    }
+                    if(count > 1){
+                        minBalance = stod(item2);
+                        break;
+                    }
+                    count++;
                 }
-                count++;
             }
         }
+        cout << "Please Enter The Amount to Withdraw: ";
+        cin >> to_withdraw;
 
-        list.close();
-    } else if(choice == 4){
+        if(type == "Basic"){
+            BankAccount user(theBalance);
+            user.withdraw(to_withdraw);
+            // update in the files
+            cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << user.get_balance();
+
+        } else {
+            SavingsBankAccount saveUser(theBalance,minBalance);
+            saveUser.withdraw(to_withdraw);
+            // update in the files
+            cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << saveUser.get_balance();
+
+
+        }
+    }
+
+    else if(choice == 4){
+        string type;
+        int count = 0;
+        double to_deposit, theBalance, minBalance;
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
-    } else {
+        cin >> user_ID;
+        for (auto item:accounts) {
+            if(user_ID == item.first){
+                cout << "ID: " << user_ID << endl;
+                for(auto item2: item.second){
+                    if(count == 0){
+                        cout << "Balance: ";
+                        cout << item2 << endl;
+                        theBalance = stod(item2);
+                    }
+                    if(count == 1){
+                        cout << "Type: ";
+                        cout << item2 << endl;
+                        type = item2;
+                    }
+                    if(count > 1){
+                        minBalance = stod(item2);
+                        break;
+                    }
+                    count++;
+                }
+            }
+        }
+        cout << "Please Enter The Amount to Deposit: ";
+        cin >> to_deposit;
+        if(type == "Basic"){
+            BankAccount user(theBalance);
+            user.deposit(to_deposit);
+            // update in the files
+            cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << user.get_balance();
+
+        } else {
+            SavingsBankAccount saveuser(theBalance, minBalance);
+            saveuser.deposit(to_deposit);
+            // update in the files
+            cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << saveuser.get_balance();
+
+        }
+    }
+
+    else {
         cout << "Invalid input, please try again ";
         BankingApplication();
     }
@@ -181,11 +260,14 @@ void BankAccount::set_ID(string id){
     id = ID;
 }
 
-void BankAccount::withdraw(double withdrawal) {
-    if(withdrawal > balance){
+void BankAccount::withdraw(double withdrawals) {
+    if(withdrawals > balance){
+        cout << "bank acc \n";
         cout << "Withdrawal is greater than the available balance, please try again!" << endl;
+        cin >> withdrawals;
+        BankAccount::withdraw(withdrawals);
     } else {
-        balance -= withdrawal;
+        balance -= withdrawals;
     }
 }
 
@@ -211,12 +293,16 @@ void SavingsBankAccount::withdraw(double withdrawal) {
         balance -= withdrawal;
     } else {
         cout << "Withdrawal is greater than the minimum amount that should be left in bank, please try again!" << endl;
+        cin >> withdrawal;
+        SavingsBankAccount::withdraw(withdrawal);
     }
 }
 
 void SavingsBankAccount::deposit(double added) {
     if (added < 100){
         cout << "The minimum amount to be deposited in 100, please try again!" << endl;
+        cin >> added;
+        SavingsBankAccount::deposit(added);
     } else {
         balance += added;
     }

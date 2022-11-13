@@ -24,7 +24,7 @@ public:
     string get_ID();
     string increment_ID();
     void set_ID(string id);
-    virtual void withdraw(double withdrawal);
+    virtual void withdraw(double withdrawals);
     virtual void deposit(double added);
 };
 
