@@ -1,36 +1,56 @@
 #include "BankSystem.h"
 #include <bits/stdc++.h>
 
-//int BankAccount::countID = 0;
+map <string, list<string>> accounts;
+map <string, list<string>> clients;
 
 BankingApplication::BankingApplication(int ch){
     int choice;
-    string user_ID;
+    int countMap = 0;
+    string user_ID, lineMap;
     fstream ClientFile;
     fstream accountFile;
-    ClientFile.open("Client.txt", ios::app);
-    accountFile.open("Account.txt", ios::app);
     int choiceAccount;
     double accountBalance, minimumBalance;
     string name, address, phone;
     cout << "Welcome to FCAI Banking Application \n 1. Create a New Account \n 2. List Clients and Accounts \n 3. Withdraw Money \n 4. Deposit Money \n"
             "Please enter Choice:";
     cin >> choice;
+    ClientFile.open("Client.txt", ios::in);
+    while(!ClientFile.eof()){
+        if(countMap == 0){
+            getline(ClientFile, lineMap);
+        }
+        countMap++;
+        getline(ClientFile, lineMap);
+        getline(ClientFile, lineMap);
+        string line1 = lineMap;
+        getline(ClientFile, lineMap);
+        string line2 = lineMap;
+        getline(ClientFile, lineMap);
+        string line3 = lineMap;
+        getline(ClientFile, lineMap);
+        string line4 = lineMap;
+        clients.insert(pair<string, list<string>>(lineMap, {line1, line2, line3, line4}));
+    }
+    ClientFile.close();
     if(choice == 1){
+        ClientFile.open("Client.txt", ios::app);
+        accountFile.open("Account.txt", ios::app);
         BankAccount initalize;
         initalize.set_ID(initalize.increment_ID());
-        ClientFile << "Account ID: " << initalize.get_ID() << endl;
-        accountFile << "Account ID: " << initalize.get_ID() << endl;
+        ClientFile << initalize.get_ID() << endl;
+        accountFile << initalize.get_ID() << endl;
         cout << "Please Enter Client Name: ";
         cin.ignore();
         getline(cin, name);
-        ClientFile << "Name: " << name << endl;
+        ClientFile << name << endl;
         cout << "Please Enter Client Address: ";
         getline(cin, address);
-        ClientFile << "Address: " << address << endl;
+        ClientFile << address << endl;
         cout << "Please Enter Client Phone: ";
         getline(cin, phone);
-        ClientFile << "Phone: " << phone << endl;
+        ClientFile << phone << endl;
         Client user(name,address,phone);
         cout << "What Type of Account Do You Like? (1) Basic (2) Saving, Type 1 or 2: ";
         cin >> choiceAccount;
@@ -38,9 +58,11 @@ BankingApplication::BankingApplication(int ch){
             cout << "Please Enter the Starting Balance: ";
             cin >> accountBalance;
             BankAccount basic(accountBalance);
-            ClientFile << "Balance: " << accountBalance << endl;
-            accountFile << "Balance: " << accountBalance << endl;
-            accountFile << "Account Type: Basic" << endl;
+            ClientFile << accountBalance << endl;
+            accountFile << accountBalance << endl;
+            accountFile << "Basic" << endl;
+            accounts.insert(pair<string, list<string>>(initalize.get_ID(), {to_string(accountBalance), "Basic"}));
+            clients.insert(pair<string, list<string>>(initalize.get_ID(), {name, address, phone, to_string(accountBalance)}));
         } else if(choiceAccount == 2){
             cout << "Please Enter the Starting Balance: ";
             cin >> accountBalance;
@@ -51,35 +73,93 @@ BankingApplication::BankingApplication(int ch){
                 cin >> accountBalance;
             }
             SavingsBankAccount savingAccount(accountBalance,minimumBalance);
-            ClientFile << "Balance: " << accountBalance << endl;
-            accountFile << "Balance: " << accountBalance << endl;
-            accountFile << "Account Type: Saving" << endl;
+            ClientFile << accountBalance << endl;
+            accountFile << accountBalance << endl;
+            accountFile << "Saving" << endl;
+            accounts.insert(pair<string, list<string>>(initalize.get_ID(), {to_string(accountBalance), "Saving"}));
+            clients.insert(pair<string, list<string>>(initalize.get_ID(), {name, address, phone, to_string(accountBalance)}));
         }
+        ClientFile << endl;
+        accountFile << endl;
+        ClientFile.close();
+        accountFile.close();
     } else if(choice == 2){
+
+//        ifstream list;
+//        list.open("Client.txt", ios::in);
+//        int count = 0;
 //        string word;
 //        string line;
-//        cout << "Please Please Enter Account ID (e.g., FCAI-015): ";
-//        cin >> user_ID;
-//        while(ClientFile >> word){
-//            if(word == user_ID){
-//                for (int i = 0; i < 5; ++i) {
-//                    getline(ClientFile, line);
-//                    cout << line;
-//                }
+
+//        list<int>::iterator it = li.begin();
+//
+//        // Move the iterator by 5 elements
+//        advance(it, 5);
+//
+//        // Print the element at the it
+//        cout << *it;
+        int count = 0;
+        cout << "Please Enter Account ID (e.g., FCAI-015): ";
+        cin >> user_ID;
+        for (auto item:clients) {
+            if(user_ID == item.first){
+                cout << "ID: " << user_ID << endl;
+            }
+            for(auto item2: item.second){
+                if(count == 0)
+                    cout << "Name: ";
+                if(count == 1)
+                    cout << "Address: ";
+                if(count == 2)
+                    cout << "Phone: ";
+                if(count == 3)
+                    cout << "Balance: ";
+                cout << item2 << endl;
+                count++;
+            }
+        }
+//        while(!list.eof() && count <= 5){
+//            getline(list, line);
+//            if(line.find(user_ID) != -1){
+//               count++;
+//            }
+//            if(count >= 1){
+//                cout << line << endl;
+//                count++;
 //            }
 //        }
+//        list.close();
     }else if(choice == 3) {
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
-    }else if(choice == 4){
+        cin >> user_ID;
+        fstream list;
+        string balanceLine;
+        list.open("Account.txt", ios::in | ios::out);
+        int count = 0;
+        string word;
+        string line;
+        while(!list.eof() && count <= 3){
+            getline(list, line);
+            if(line.find(user_ID) != -1) {
+                count++;
+            }
+            if(count >= 1){
+                cout << line << endl;
+                if(count == 2){
+                    balanceLine = line;
+                }
+                count++;
+            }
+        }
+
+        list.close();
+    } else if(choice == 4){
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
     } else {
         cout << "Invalid input, please try again ";
         BankingApplication();
     }
-    ClientFile << endl;
-    accountFile << endl;
-    ClientFile.close();
-    accountFile.close();
+
 }
 
 BankAccount::BankAccount(){
@@ -175,13 +255,14 @@ string BankAccount::increment_ID(){
     ifstream file;
     file.open("Account.txt");
     int count = 0;
-    string line;
+    string word;
     while(!file.eof()){
-        getline(file, line);
-        count++;
+        file >> word;
+        if(word.substr(0,5) == "FCAI-"){
+            count++;
+        }
     }
-    count --;
-    count /= 4;
+    file.close();
     this->ID = this->ID + to_string(count);
     return this->ID;
 }

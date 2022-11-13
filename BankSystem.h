@@ -2,6 +2,7 @@
 #define BANK_SYSTEM_H
 #include <iostream>
 using namespace std;
+class Client;
 
 class BankingApplication{
 public:
@@ -14,7 +15,7 @@ protected:
     string ID = "FCAI-";
     double balance;
     static int countID;
-    //Client* ptr2;
+    Client* ptr2;
 public:
     BankAccount();
     BankAccount(double bal);
