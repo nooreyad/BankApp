@@ -139,8 +139,14 @@ BankingApplication::BankingApplication(int ch){
                 }
             }
         }
+        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
+        cin >> choice;
+        if(choice == 1){
+            BankingApplication run(0);
+        } else if(choice == 2){
+            cout << "Thank you for using Bank System.\n";
+        }
     }
-
     else if(choice == 3) {
         string type;
         BankAccount user;
@@ -176,7 +182,6 @@ BankingApplication::BankingApplication(int ch){
         if(type == "Basic"){
             BankAccount user(theBalance);
             user.withdraw(to_withdraw);
-            // update in the files
             cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << user.get_balance();
 
         } else {
@@ -185,10 +190,69 @@ BankingApplication::BankingApplication(int ch){
             // update in the files
             cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << saveUser.get_balance();
 
+        }
 
+        // Update in files
+        ofstream tempFile;
+        string word;
+        double withdrawal = theBalance - to_withdraw;
+        accountFile.open("Account.txt", ios::in);
+        tempFile.open("ClientsTemp.txt", ios::out);
+        bool skip;
+        while(!accountFile.eof()){
+            getline(accountFile, word);
+            if(skip){
+                getline(accountFile, word);
+            }
+            if(word == user_ID){
+                tempFile << word << endl;
+                tempFile << withdrawal << endl;
+                skip = true;
+            } else {
+                tempFile << word << endl;
+                skip = false;
+            }
+        }
+        accountFile.close();
+        remove("Account.txt");
+        tempFile.close();
+        rename("ClientsTemp.txt", "Account.txt");
+        // --------------------------------------------------------------
+        ClientFile.open("Client.txt", ios::in);
+        tempFile.open("ClientsTemp.txt", ios::out);
+        bool skip2;
+        while(!ClientFile.eof()){
+            getline(ClientFile, word);
+            if(skip){
+                getline(ClientFile, word);
+            }
+            if(word == user_ID){
+                tempFile << word << endl;
+                for (int i = 0; i < 3; ++i) {
+                    ClientFile >> word;
+                    tempFile << word << endl;
+                }
+                tempFile << withdrawal << endl;
+                skip2 = true;
+            } else {
+                tempFile << word << endl;
+                skip2 = false;
+            }
+        }
+        ClientFile.close();
+        remove("Client.txt");
+        tempFile.close();
+        rename("ClientsTemp.txt", "Client.txt");
+
+        // For recursion
+        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
+        cin >> choice;
+        if(choice == 1){
+            BankingApplication run(0);
+        } else if(choice == 2){
+            cout << "Thank you for using Bank System.\n";
         }
     }
-
     else if(choice == 4){
         string type;
         int count = 0;
@@ -222,21 +286,80 @@ BankingApplication::BankingApplication(int ch){
         if(type == "Basic"){
             BankAccount user(theBalance);
             user.deposit(to_deposit);
-            // update in the files
             cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << user.get_balance();
 
         } else {
             SavingsBankAccount saveuser(theBalance, minBalance);
             saveuser.deposit(to_deposit);
-            // update in the files
             cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << saveuser.get_balance();
 
+        }
+
+        // update in files
+        ofstream tempFile;
+        string word;
+        double withdrawal = theBalance + to_deposit;
+        accountFile.open("Account.txt", ios::in);
+        tempFile.open("ClientsTemp.txt", ios::out);
+        bool skip;
+        while(!accountFile.eof()){
+            getline(accountFile, word);
+            if(skip){
+                getline(accountFile, word);
+            }
+            if(word == user_ID){
+                tempFile << word << endl;
+                tempFile << withdrawal << endl;
+                skip = true;
+            } else {
+                tempFile << word << endl;
+                skip = false;
+            }
+        }
+        accountFile.close();
+        remove("Account.txt");
+        tempFile.close();
+        rename("ClientsTemp.txt", "Account.txt");
+        // --------------------------------------------------------------
+        ClientFile.open("Client.txt", ios::in);
+        tempFile.open("ClientsTemp.txt", ios::out);
+        bool skip2;
+        while(!ClientFile.eof()){
+            getline(ClientFile, word);
+            if(skip){
+                getline(ClientFile, word);
+            }
+            if(word == user_ID){
+                tempFile << word << endl;
+                for (int i = 0; i < 3; ++i) {
+                    ClientFile >> word;
+                    tempFile << word << endl;
+                }
+                tempFile << withdrawal << endl;
+                skip2 = true;
+            } else {
+                tempFile << word << endl;
+                skip2 = false;
+            }
+        }
+        ClientFile.close();
+        remove("Client.txt");
+        tempFile.close();
+        rename("ClientsTemp.txt", "Client.txt");
+
+        // For recursion
+        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
+        cin >> choice;
+        if(choice == 1){
+            BankingApplication run(0);
+        } else if(choice == 2){
+            cout << "Thank you for using Bank System.\n";
         }
     }
 
     else {
-        cout << "Invalid input, please try again ";
-        BankingApplication();
+        cout << "Invalid input, Please Try Again\n";
+        BankingApplication run(0);
     }
 
 }
