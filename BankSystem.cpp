@@ -11,7 +11,7 @@ BankingApplication::BankingApplication(int ch){
     fstream ClientFile;
     fstream accountFile;
     int choiceAccount;
-    double accountBalance, minimumBalance;
+    double accountBalance, minimumBalance, newBalance, to_withdraw, to_deposit,theBalance, minBalance;
     string name, address, phone;
     cout << "Welcome to FCAI Banking Application \n 1. Create a New Account \n 2. List Clients and Accounts \n 3. Withdraw Money \n 4. Deposit Money \n"
             "Please enter Choice:";
@@ -139,19 +139,11 @@ BankingApplication::BankingApplication(int ch){
                 }
             }
         }
-        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
-        cin >> choice;
-        if(choice == 1){
-            BankingApplication run(0);
-        } else if(choice == 2){
-            cout << "Thank you for using Bank System.\n";
-        }
     }
     else if(choice == 3) {
         string type;
         BankAccount user;
         int count = 0;
-        double to_withdraw, theBalance, minBalance;
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
         cin >> user_ID;
         for (auto item:accounts) {
@@ -192,71 +184,10 @@ BankingApplication::BankingApplication(int ch){
 
         }
 
-        // Update in files
-        ofstream tempFile;
-        string word;
-        double withdrawal = theBalance - to_withdraw;
-        accountFile.open("Account.txt", ios::in);
-        tempFile.open("ClientsTemp.txt", ios::out);
-        bool skip;
-        while(!accountFile.eof()){
-            getline(accountFile, word);
-            if(skip){
-                getline(accountFile, word);
-            }
-            if(word == user_ID){
-                tempFile << word << endl;
-                tempFile << withdrawal << endl;
-                skip = true;
-            } else {
-                tempFile << word << endl;
-                skip = false;
-            }
-        }
-        accountFile.close();
-        remove("Account.txt");
-        tempFile.close();
-        rename("ClientsTemp.txt", "Account.txt");
-        // --------------------------------------------------------------
-        ClientFile.open("Client.txt", ios::in);
-        tempFile.open("ClientsTemp.txt", ios::out);
-        bool skip2;
-        while(!ClientFile.eof()){
-            getline(ClientFile, word);
-            if(skip){
-                getline(ClientFile, word);
-            }
-            if(word == user_ID){
-                tempFile << word << endl;
-                for (int i = 0; i < 3; ++i) {
-                    ClientFile >> word;
-                    tempFile << word << endl;
-                }
-                tempFile << withdrawal << endl;
-                skip2 = true;
-            } else {
-                tempFile << word << endl;
-                skip2 = false;
-            }
-        }
-        ClientFile.close();
-        remove("Client.txt");
-        tempFile.close();
-        rename("ClientsTemp.txt", "Client.txt");
-
-        // For recursion
-        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
-        cin >> choice;
-        if(choice == 1){
-            BankingApplication run(0);
-        } else if(choice == 2){
-            cout << "Thank you for using Bank System.\n";
-        }
     }
     else if(choice == 4){
         string type;
         int count = 0;
-        double to_deposit, theBalance, minBalance;
         cout << "Please Enter Account ID (e.g., FCAI-015): ";
         cin >> user_ID;
         for (auto item:accounts) {
@@ -292,16 +223,26 @@ BankingApplication::BankingApplication(int ch){
             SavingsBankAccount saveuser(theBalance, minBalance);
             saveuser.deposit(to_deposit);
             cout << "Balance has been updated Successfully! \nAccount ID: " << user_ID << "\nNew Balance: " << saveuser.get_balance();
-
         }
 
+    } else {
+        cout << "Invalid input, Please Try Again\n";
+        BankingApplication run(0);
+    }
+
+    if(choice == 3 || choice == 4){
+        if(choice == 3){
+            newBalance = theBalance - to_withdraw;
+        }
+        if(choice == 4){
+            newBalance = theBalance + to_deposit;
+        }
         // update in files
         ofstream tempFile;
         string word;
-        double withdrawal = theBalance + to_deposit;
         accountFile.open("Account.txt", ios::in);
         tempFile.open("ClientsTemp.txt", ios::out);
-        bool skip;
+        bool skip = false;
         while(!accountFile.eof()){
             getline(accountFile, word);
             if(skip){
@@ -309,7 +250,7 @@ BankingApplication::BankingApplication(int ch){
             }
             if(word == user_ID){
                 tempFile << word << endl;
-                tempFile << withdrawal << endl;
+                tempFile << newBalance << endl;
                 skip = true;
             } else {
                 tempFile << word << endl;
@@ -323,10 +264,10 @@ BankingApplication::BankingApplication(int ch){
         // --------------------------------------------------------------
         ClientFile.open("Client.txt", ios::in);
         tempFile.open("ClientsTemp.txt", ios::out);
-        bool skip2;
+        bool skip2 = false;
         while(!ClientFile.eof()){
             getline(ClientFile, word);
-            if(skip){
+            if(skip2){
                 getline(ClientFile, word);
             }
             if(word == user_ID){
@@ -335,7 +276,7 @@ BankingApplication::BankingApplication(int ch){
                     ClientFile >> word;
                     tempFile << word << endl;
                 }
-                tempFile << withdrawal << endl;
+                tempFile << newBalance << endl;
                 skip2 = true;
             } else {
                 tempFile << word << endl;
@@ -346,7 +287,6 @@ BankingApplication::BankingApplication(int ch){
         remove("Client.txt");
         tempFile.close();
         rename("ClientsTemp.txt", "Client.txt");
-
         // For recursion
         cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
         cin >> choice;
@@ -355,11 +295,15 @@ BankingApplication::BankingApplication(int ch){
         } else if(choice == 2){
             cout << "Thank you for using Bank System.\n";
         }
-    }
-
-    else {
-        cout << "Invalid input, Please Try Again\n";
-        BankingApplication run(0);
+    } else {
+        // For recursion
+        cout << "\nWould you like to:\n1. Return to Main Menu.\n2. Exit.\n";
+        cin >> choice;
+        if(choice == 1){
+            BankingApplication run(0);
+        } else if(choice == 2){
+            cout << "Thank you for using Bank System.\n";
+        }
     }
 
 }
@@ -385,7 +329,6 @@ void BankAccount::set_ID(string id){
 
 void BankAccount::withdraw(double withdrawals) {
     if(withdrawals > balance){
-        cout << "bank acc \n";
         cout << "Withdrawal is greater than the available balance, please try again!" << endl;
         cin >> withdrawals;
         BankAccount::withdraw(withdrawals);
